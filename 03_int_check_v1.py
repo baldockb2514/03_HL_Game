@@ -2,6 +2,7 @@
 def int_check(question, low=None, high=None):
     situation = ""
 
+    # if low and high
     if low is not None and high is not None:
         situation = "both"
     elif low is not None and high is None:
@@ -12,18 +13,17 @@ def int_check(question, low=None, high=None):
         try:
             response = int(input(question))
 
-            # checks input is not too high or low if both upper and lower bounds are specified
+            # checks guess input is not too high or low if both upper and lower bounds are specified
             if situation == "both":
-                if response < low or high > high:
+                if response < low or response > high:
                     print(f"Please enter a number between {low} and {high}.")
                     continue
 
-            # checks input is not too low
+            # checks high number is not too low
             elif situation == "low only":
                 if response < low:
-                    print(f"Please enter a number that is lower than (or equal to) {low}")
+                    print(f"Please enter a number that is higher than (or equal to) {low}")
                     continue
-
 
             return response
 
@@ -37,3 +37,4 @@ lowest = int_check("Low Number: ")
 highest = int_check("High Number: ", lowest + 1)
 rounds = int_check("Rounds: ", 1)
 guess = int_check("Guess: ", lowest, highest)
+print("Program continues")
