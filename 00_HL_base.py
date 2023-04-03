@@ -120,6 +120,10 @@ print()
 if see_instructions == "yes":
     instructions()
 
+# get the range the secret number is between
+lowest = int_check("Low number: ")
+highest = int_check("High Number: ", lowest + 1)
+
 # Ask user for # of rounds then loop...
 rounds_played = 0
 
@@ -130,7 +134,7 @@ rounds_lost = 0
 mode = "regular"
 
 # Ask user for # of rounds, <enter> for indefinite mode
-rounds = int_check("How many rounds?: ", 1, exit_code="xxx")
+rounds = int_check("How many rounds?: ", 1, None, "xxx")
 if rounds == "":
     mode = "infinite"
     rounds = 5
@@ -154,13 +158,10 @@ while end_game == "no":
         heading = f"Round of {rounds_played + 1} of {rounds}"
 
     print(heading)
-    # get the range the secret number is between
-
-    lowest = int_check("Low number: ")
-    highest = int_check("High Number: ", lowest + 1)
 
     # get the secret number
     secret_num = random.randint(lowest, highest)
+    print(secret_num)
 
     # calculate the number of guesses allowed
     guess_range = highest - lowest + 1
@@ -173,41 +174,52 @@ while end_game == "no":
     # set list to prevent duplicates
     already_guessed = []
 
-    # get users guess
-    guess = int_check("Guess a number: ", lowest, highest)
-
     # compare numbers
-    while guess != secret_num and guesses_left >= 1:
+    while guesses_left >= 0:
 
-        guess = int(input("Guess: "))  # replace this with function
+        # get users guess
+        guess = int_check("Guess a number: ", lowest, highest)
 
         # checks that guess is not a duplicate
         if guess in already_guessed:
             print(f"You already guessed that number! Please try again. You *still* have {guesses_left} guesses left")
             continue
 
-        guesses_left -= 1
-        already_guessed.append(guess)
+        elif guess != secret_num:
 
-        if guesses_left >= 1:
+            guesses_left -= 1
+            already_guessed.append(guess)
+
             if guess < secret_num:
                 print("Too low, try a higher number. Guesses left: {}".format(guesses_left))
 
             elif guess > secret_num:
                 print("Too high, try a lower number. Guesses left: {}".format(guesses_left))
 
-        else:
-            if guess < secret_num:
-                print("Too low!")
-            elif guess > secret_num:
-                print("Too high!")
+        elif guess == secret_num:
+            if guesses_left == guesses_allowed:
+                print(f"Amazing! You got it in one!")
+            else:
+                print(f"Well done. You got it in {len(already_guessed) + 1}.")
+            rounds_won += 1
+            break
 
-    if guess == secret_num:
-        if guesses_left == guesses_allowed - 1:
-            print(f"Amazing! You got it in one!")
-        else:
-            print(f"Well done. You got it in {len(already_guessed)}.")
-        rounds_won += 1
+        elif guess == "xxx":
+            break
 
-    elif guesses_left == 0:
-        print("Better luck next time.")
+        if guesses_left < 1:
+            print("Better luck next time.")
+            rounds_lost += 1
+            break
+
+    if mode == "regular":
+        if rounds_played < rounds:
+            rounds_played += 1
+            continue
+
+        else:
+            break
+
+    else:
+        rounds_played += 1
+        continue
