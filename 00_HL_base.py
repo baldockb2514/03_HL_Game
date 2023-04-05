@@ -136,8 +136,9 @@ while replay_game == "yes":
         else:
             break
 
-    # Set up list for game stats
+    # Set up lists for game stats
     game_summary = []
+    round_score = []
 
     # Ask user for choice and check that it's valid
     end_game = "no"
@@ -212,7 +213,6 @@ while replay_game == "yes":
             result = "Loss"
 
         # if the number of rounds played equals the amount of rounds, end game
-        rounds_played += 1
         if rounds_played == rounds:
             break
         else:
