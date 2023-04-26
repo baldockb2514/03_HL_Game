@@ -128,10 +128,9 @@ while replay_game == "yes":
         rounds = int_check("How many rounds?: ", 1, None, "xxx")
         if rounds == "":
             mode = "infinite"
-            rounds = 5
             break
         elif rounds == "xxx":
-            print()
+            print("Please enter a number that is higher than (or equal to) 1")
             continue
         else:
             break
@@ -150,7 +149,6 @@ while replay_game == "yes":
         print()
         if mode == "infinite":
             heading = f"Continuous Mode: Round {rounds_played + 1}"
-            rounds += 1
 
         else:
             heading = f"Round of {rounds_played + 1} of {rounds}"
@@ -172,50 +170,56 @@ while replay_game == "yes":
         # set list to prevent duplicates
         already_guessed = []
 
-        # compare numbers
-        # get users guess
-        guess = int_check("Guess a number: ", lowest, highest, "xxx")
+        while guesses_left >= 1:
+            # compare numbers
+            # get users guess
+            guess = int_check("Guess a number: ", lowest, highest, "xxx")
 
-        # End game if exit code is typed
-        if guess == "xxx":
-            break
+            # End game if exit code is typed
+            if guess == "xxx":
+                break
 
-        # checks that guess is not a duplicate
-        elif guess in already_guessed:
-            print(f"You already guessed that number! Please try again. You *still* have {guesses_left} guesses left")
-            continue
 
-        elif guess != secret_num:
+            # checks that guess is not a duplicate
+            elif guess in already_guessed:
+                print(
+                    f"You already guessed that number! Please try again. You *still* have {guesses_left} guesses left")
+                continue
 
-            guesses_left -= 1
-            already_guessed.append(guess)
+            elif guess != secret_num:
 
-            # check if the guess is lower or higher than the secret number, then tell the user
-            if guess < secret_num:
-                print("Too low, try a higher number. Guesses left: {}".format(guesses_left))
-            elif guess > secret_num:
-                print("Too high, try a lower number. Guesses left: {}".format(guesses_left))
+                guesses_left -= 1
+                already_guessed.append(guess)
 
-        # if the guess is the same as the secret number, the user wins
-        elif guess == secret_num:
-            if guesses_left == guesses_allowed:
-                # custom message if the got it in one
-                print(f"Amazing! You got it in one!")
+                # check if the guess is lower or higher than the secret number, then tell the user
+                if guess < secret_num:
+                    print("Too low, try a higher number. Guesses left: {}".format(guesses_left))
+                elif guess > secret_num:
+                    print("Too high, try a lower number. Guesses left: {}".format(guesses_left))
+
+            # if the guess is the same as the secret number, the user wins
+            elif guess == secret_num:
+                if guesses_left == guesses_allowed:
+                    # custom message if the got it in one
+                    print(f"Amazing! You got it in one!")
+                else:
+                    print(f"Well done. You got it in {len(already_guessed) + 1}.")
+                rounds_won += 1
+                result = "Win"
+                break
+
+            # if the number of guesses left is less than one, the user lost
             else:
-                print(f"Well done. You got it in {len(already_guessed) + 1}.")
-            rounds_won += 1
-            result = "Win"
-
-        # if the number of guesses left is less than one, the user lost
-        elif guesses_left < 1:
-            print("Better luck next time.")
-            rounds_lost += 1
-            result = "Loss"
+                rounds_lost += 1
+                break
 
         # if the number of rounds played equals the amount of rounds, end game
         if rounds_played == rounds:
             break
+        elif guess == "xxx":
+            break
         else:
+            rounds_played += 1
             continue
 
     print()
