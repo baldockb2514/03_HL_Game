@@ -23,16 +23,16 @@ def yes_no(question):
         response = input(question).lower()
         response = response.replace(" ", "")
 
+        # If response is valid, return response
         if response == "yes" or response == "y":
             response = "yes"
             return response
-
-            # If they say no, output 'display instructions'
 
         elif response == "no" or response == "n":
             response = "no"
             return response
 
+        # If not, print error
         else:
             print("Please answer yes / no")
 
@@ -52,24 +52,23 @@ def instructions():
     return ""
 
 
-# Get the high and low numbers for the number range, also round check
+# Check if a number is an Integer within specified bounds
 def int_check(question, low=None, high=None, exit_code=None):
     situation = ""
 
-    # if low and high
     if low is not None and high is not None:
         situation = "both"
+
     elif low is not None and high is None:
         situation = "low only"
 
     while True:
 
         response = input(question)
-        if exit_code is not None:
-            if response == "":
-                return response
-            elif response == exit_code:
-                return response
+        if response == "":
+            return response
+        elif response == exit_code:
+            return response
 
         try:
             response = int(response)
@@ -80,7 +79,7 @@ def int_check(question, low=None, high=None, exit_code=None):
                     print(f"Please enter a number between {low} and {high}.")
                     continue
 
-            # checks high number is not too low
+            # checks if a number is higher than low if only lower bounds are specified
             elif situation == "low only":
                 if response < low:
                     print(f"Please enter a number that is higher than (or equal to) {low}")
@@ -88,7 +87,7 @@ def int_check(question, low=None, high=None, exit_code=None):
 
             return response
 
-        # checks input is an integer
+        # If input it not an integer, print error and ask question again
         except ValueError:
             print("Please enter a integer. ")
             continue
@@ -119,25 +118,26 @@ while replay_game == "yes":
     # initialise lost and win counters
     rounds_won = 0
     rounds_lost = 0
+    rounds = 0
+    guess = 0
+    outcome = ()
+    score = 0
+
+    # set lists for game summary
+    game_summary = []
+    round_score = []
 
     mode = "regular"
 
     # Ask user for # of rounds, <enter> for indefinite mode
     mode_valid = "no"
     while mode_valid == "no":
-        rounds = int_check("How many rounds?: ", 1, None, "xxx")
+        rounds = int_check("How many rounds?: ", 1)
         if rounds == "":
             mode = "infinite"
             break
-        elif rounds == "xxx":
-            print("Please enter a number that is higher than (or equal to) 1")
-            continue
         else:
             break
-
-    # Set up lists for game stats
-    game_summary = []
-    round_score = []
 
     # Ask user for choice and check that it's valid
     end_game = "no"
@@ -179,7 +179,6 @@ while replay_game == "yes":
             if guess == "xxx":
                 break
 
-
             # checks that guess is not a duplicate
             elif guess in already_guessed:
                 print(
@@ -202,25 +201,54 @@ while replay_game == "yes":
                 if guesses_left == guesses_allowed:
                     # custom message if the got it in one
                     print(f"Amazing! You got it in one!")
+                    score = 1
                 else:
                     print(f"Well done. You got it in {len(already_guessed) + 1}.")
+                    score = len(already_guessed) + 1
                 rounds_won += 1
                 result = "Win"
+                outcome = "Round {}:\n Result: {}, Score: {}".format(rounds_played + 1, result, score)
                 break
 
-            # if the number of guesses left is less than one, the user lost
-            else:
-                rounds_lost += 1
-                break
+        # if the number of guesses left is less than one, the user lost
+        else:
+            print("You lost. Good luck next time!")
+            rounds_lost += 1
+            result = "Lost"
+            outcome = "Round {}:\n Result: {}".format(rounds_played + 1, result)
+
+        game_summary.append(outcome)
+        round_score.append(score)
 
         # if the number of rounds played equals the amount of rounds, end game
-        if rounds_played == rounds:
+        rounds_played += 1
+        if rounds_played >= rounds:
             break
         elif guess == "xxx":
             break
         else:
-            rounds_played += 1
             continue
+
+    # Calculate game statistics
+    percent_win = rounds_won / rounds_played * 100
+    percent_lost = rounds_lost / rounds_played * 100
+    highest_score = min(round_score)
+    lowest_score = max(round_score)
+    ave_score = (sum(round_score)) / len(round_score)
+
+    print()
+    print("***** Game History *****")
+    for outcome in game_summary:
+        print(outcome)
+
+    print()
+
+    # displays game stats with % values to the nearest whole number
+    print("******* Game Statistics *******")
+    print("Win: {}, ({:.0f}%)\nLoss: {}, "
+          "({:.0f}%)".format(rounds_won, percent_win, rounds_lost, percent_lost))
+    print(f"Best Score: {highest_score:.0f}\nWorst Score: {lowest_score:.0f}\nAverage Score: {ave_score:.2f}")
+    print()
 
     print()
     replay = yes_no("Would you like to play again?: ")
