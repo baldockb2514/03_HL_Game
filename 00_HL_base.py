@@ -5,13 +5,19 @@ import random
 # Functions go here
 
 # statement decoration types
-def statement_decorator(statement, decoration):
-    # Make string with three characters
-    sides = decoration * 5
+def statement_decorator(statement, decoration=None, decoration_two=None):
 
-    # add decoration to start and ent of statement
-    statement = "{} {} {}".format(sides, statement, sides)
-    print(statement)
+    # Make string with three characters
+    if decoration is not None and decoration_two is None:
+        sides = decoration * 5
+
+        # add decoration to start and ent of statement
+        statement = "{} {} {}".format(sides, statement, sides)
+        print(statement)
+
+    else:
+        top_bottom = decoration_two * len(statement)
+        statement = f"{top_bottom}\n{statement}\n{top_bottom}"
 
     return ""
 
@@ -56,19 +62,21 @@ def instructions():
 def int_check(question, low=None, high=None, exit_code=None):
     situation = ""
 
+    # set the situation depending on what parameters were entered
     if low is not None and high is not None:
         situation = "both"
-
     elif low is not None and high is None:
         situation = "low only"
 
     while True:
 
+        # Allow "" and the exit code to be a valid input
         response = input(question)
-        if response == "":
-            return response
-        elif response == exit_code:
-            return response
+        if exit_code is not None:
+            if response == "":
+                return response
+            elif response == exit_code:
+                return response
 
         try:
             response = int(response)
@@ -115,24 +123,24 @@ while replay_game == "yes":
     # Ask user for # of rounds then loop...
     rounds_played = 0
 
-    # initialise lost and win counters
+    # initialise counters
     rounds_won = 0
     rounds_lost = 0
     rounds = 0
     guess = 0
-    outcome = ()
     score = 0
 
     # set lists for game summary
     game_summary = []
     round_score = []
 
+    # set the mode to regular
     mode = "regular"
 
     # Ask user for # of rounds, <enter> for indefinite mode
     mode_valid = "no"
     while mode_valid == "no":
-        rounds = int_check("How many rounds?: ", 1)
+        rounds = int_check("How many rounds?: ", 1, None, "xxx")
         if rounds == "":
             mode = "infinite"
             break
@@ -140,16 +148,14 @@ while replay_game == "yes":
             break
 
     # Ask user for choice and check that it's valid
+    # Start of gameplay loop
     end_game = "no"
     while end_game == "no":
 
-        # Start of gameplay loop
-
-        # Rounds Heading
+        # Set Rounds Heading depending on the mode
         print()
         if mode == "infinite":
             heading = f"Continuous Mode: Round {rounds_played + 1}"
-
         else:
             heading = f"Round of {rounds_played + 1} of {rounds}"
 
@@ -177,6 +183,8 @@ while replay_game == "yes":
 
             # End game if exit code is typed
             if guess == "xxx":
+                score = 0
+                outcome = ""
                 break
 
             # checks that guess is not a duplicate
@@ -200,11 +208,12 @@ while replay_game == "yes":
             elif guess == secret_num:
                 if guesses_left == guesses_allowed:
                     # custom message if the got it in one
-                    print(f"Amazing! You got it in one!")
+                    statement_decorator(f"Amazing! You got it in one!", None, "*")
                     score = 1
                 else:
-                    print(f"Well done. You got it in {len(already_guessed) + 1}.")
+                    statement_decorator(f"Well done. You got it in {len(already_guessed) + 1}.", None, "!")
                     score = len(already_guessed) + 1
+                # results for summary
                 rounds_won += 1
                 result = "Win"
                 outcome = "Round {}:\n Result: {}, Score: {}".format(rounds_played + 1, result, score)
@@ -212,44 +221,59 @@ while replay_game == "yes":
 
         # if the number of guesses left is less than one, the user lost
         else:
-            print("You lost. Good luck next time!")
+            statement_decorator("You lost. Good luck next time!", None, "-")
+            # results for summary
             rounds_lost += 1
             result = "Lost"
             outcome = "Round {}:\n Result: {}".format(rounds_played + 1, result)
 
-        game_summary.append(outcome)
-        round_score.append(score)
+        if outcome != "":
+            game_summary.append(outcome)
+        # If the score is more than zero, add it to the list
+        if score > 0:
+            round_score.append(score)
 
-        # if the number of rounds played equals the amount of rounds, end game
-        rounds_played += 1
-        if rounds_played >= rounds:
-            break
-        elif guess == "xxx":
+        # If the exit code is typed, end game
+        if guess == "xxx":
             break
         else:
-            continue
+            rounds_played += 1
+            # if the mode is infinite, continue game
+            if rounds == "":
+                continue
+            # if the number of rounds is more than rounds played, continue game
+            elif rounds > rounds_played:
+                continue
+            # if nothing else applies, end game
+            else:
+                break
 
-    # Calculate game statistics
+    # Calculate game statistics (Best score, worst score average)
     percent_win = rounds_won / rounds_played * 100
     percent_lost = rounds_lost / rounds_played * 100
-    highest_score = min(round_score)
-    lowest_score = max(round_score)
+    best_score = min(round_score)
+    worst_score = max(round_score)
     ave_score = (sum(round_score)) / len(round_score)
 
+    # print game summary heading
+    print(f"Score list:\n {round_score}")
     print()
     print("***** Game History *****")
     for outcome in game_summary:
+        # Print the outcome of each round
         print(outcome)
 
     print()
 
     # displays game stats with % values to the nearest whole number
-    print("******* Game Statistics *******")
+    print("Game Statistics", "*")
     print("Win: {}, ({:.0f}%)\nLoss: {}, "
           "({:.0f}%)".format(rounds_won, percent_win, rounds_lost, percent_lost))
-    print(f"Best Score: {highest_score:.0f}\nWorst Score: {lowest_score:.0f}\nAverage Score: {ave_score:.2f}")
+    # displays the best, worst and averageascore
+    print(f"Best Score: {best_score:.0f}\nWorst Score: {worst_score:.0f}\nAverage Score: {ave_score:.2f}")
     print()
 
+    # Asks if the user wants to replay the game
     print()
     replay = yes_no("Would you like to play again?: ")
     if replay == "yes":
