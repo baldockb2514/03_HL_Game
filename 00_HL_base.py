@@ -5,19 +5,14 @@ import random
 # Functions go here
 
 # statement decoration types
-def statement_decorator(statement, decoration=None, decoration_two=None):
+def statement_decorator(statement, decoration):
 
-    # Make string with three characters
-    if decoration is not None and decoration_two is None:
-        sides = decoration * 5
+    # Make string with five characters
+    sides = decoration * 5
 
-        # add decoration to start and ent of statement
-        statement = "{} {} {}".format(sides, statement, sides)
-        print(statement)
-
-    else:
-        top_bottom = decoration_two * len(statement)
-        statement = f"{top_bottom}\n{statement}\n{top_bottom}"
+    # add decoration to start and ent of statement
+    statement = "{} {} {}".format(sides, statement, sides)
+    print(statement)
 
     return ""
 
@@ -75,7 +70,7 @@ def int_check(question, low=None, high=None, exit_code=None):
         if exit_code is not None:
             if response == "":
                 return response
-            elif response == exit_code:
+            if response == exit_code:
                 return response
 
         try:
@@ -107,9 +102,11 @@ def int_check(question, low=None, high=None, exit_code=None):
 print()
 statement_decorator("Welcome to Higher or Lower", "*")
 
-# ask if the user would like to see the instructions
+# Set up a loop to replay the game
 replay_game = "yes"
 while replay_game == "yes":
+
+    # ask if the user would like to see the instructions
     print()
     see_instructions = yes_no("Would you like to see the instructions? ")
     print()
@@ -187,6 +184,9 @@ while replay_game == "yes":
                 outcome = ""
                 break
 
+            elif guess == "":
+                print(f"Please enter a number between {lowest} and {highest}.")
+
             # checks that guess is not a duplicate
             elif guess in already_guessed:
                 print(
@@ -196,24 +196,24 @@ while replay_game == "yes":
             elif guess != secret_num:
 
                 guesses_left -= 1
+                # Append the number guessed to avoid duplicates
                 already_guessed.append(guess)
 
                 # check if the guess is lower or higher than the secret number, then tell the user
                 if guess < secret_num:
-                    print("Too low, try a higher number. Guesses left: {}".format(guesses_left))
+                    statement_decorator("Too low, try a higher number. Guesses left: {}".format(guesses_left), "↑",)
                 elif guess > secret_num:
-                    print("Too high, try a lower number. Guesses left: {}".format(guesses_left))
+                    statement_decorator("Too high, try a lower number. Guesses left: {}".format(guesses_left), "↓")
 
             # if the guess is the same as the secret number, the user wins
             elif guess == secret_num:
                 if guesses_left == guesses_allowed:
                     # custom message if the got it in one
-                    statement_decorator(f"Amazing! You got it in one!", None, "*")
-                    score = 1
+                    statement_decorator(f"Amazing! You got it in one!", "*")
                 else:
-                    statement_decorator(f"Well done. You got it in {len(already_guessed) + 1}.", None, "!")
-                    score = len(already_guessed) + 1
+                    statement_decorator(f"Well done. You got it in {len(already_guessed) + 1}", "!")
                 # results for summary
+                score = len(already_guessed) + 1
                 rounds_won += 1
                 result = "Win"
                 outcome = "Round {}:\n Result: {}, Score: {}".format(rounds_played + 1, result, score)
@@ -221,7 +221,7 @@ while replay_game == "yes":
 
         # if the number of guesses left is less than one, the user lost
         else:
-            statement_decorator("You lost. Good luck next time!", None, "-")
+            statement_decorator("You lost. Good luck next time!", "-")
             # results for summary
             rounds_lost += 1
             result = "Lost"
@@ -238,13 +238,10 @@ while replay_game == "yes":
             break
         else:
             rounds_played += 1
-            # if the mode is infinite, continue game
-            if rounds == "":
+            # if the number of rounds is more than rounds played or the mode is infinite, continue game
+            if mode == "infinite" or rounds > rounds_played:
                 continue
-            # if the number of rounds is more than rounds played, continue game
-            elif rounds > rounds_played:
-                continue
-            # if nothing else applies, end game
+            # otherwise, end game
             else:
                 break
 
@@ -269,13 +266,14 @@ while replay_game == "yes":
     print("Game Statistics", "*")
     print("Win: {}, ({:.0f}%)\nLoss: {}, "
           "({:.0f}%)".format(rounds_won, percent_win, rounds_lost, percent_lost))
-    # displays the best, worst and averageascore
+    # displays the best, worst and average score
     print(f"Best Score: {best_score:.0f}\nWorst Score: {worst_score:.0f}\nAverage Score: {ave_score:.2f}")
     print()
 
     # Asks if the user wants to replay the game
     print()
     replay = yes_no("Would you like to play again?: ")
+    # If yes, Replay game
     if replay == "yes":
         continue
     else:
