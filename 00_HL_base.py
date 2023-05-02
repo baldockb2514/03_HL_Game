@@ -24,7 +24,7 @@ def yes_no(question):
         response = input(question).lower()
         response = response.replace(" ", "")
 
-        # If response is valid, return response
+        # If the response is valid, return response
         if response == "yes" or response == "y":
             response = "yes"
             return response
@@ -126,6 +126,7 @@ while replay_game == "yes":
     rounds = 0
     guess = 0
     score = 0
+    result = ""
 
     # set lists for game summary
     game_summary = []
@@ -141,6 +142,9 @@ while replay_game == "yes":
         if rounds == "":
             mode = "infinite"
             break
+        elif rounds == "xxx":
+            print("Please enter a integer. ")
+            continue
         else:
             break
 
@@ -160,7 +164,6 @@ while replay_game == "yes":
 
         # get the secret number
         secret_num = random.randint(lowest, highest)
-        print(secret_num)
 
         # calculate the number of guesses allowed
         guess_range = highest - lowest + 1
@@ -180,7 +183,7 @@ while replay_game == "yes":
 
             # End game if exit code is typed
             if guess == "xxx":
-                score = 0
+                score = -1
                 outcome = ""
                 break
 
@@ -213,10 +216,9 @@ while replay_game == "yes":
                 else:
                     statement_decorator(f"Well done. You got it in {len(already_guessed) + 1}", "!")
                 # results for summary
-                score = len(already_guessed) + 1
+                score = guesses_allowed - len(already_guessed) + 1
                 rounds_won += 1
                 result = "Win"
-                outcome = "Round {}:\n Result: {}, Score: {}".format(rounds_played + 1, result, score)
                 break
 
         # if the number of guesses left is less than one, the user lost
@@ -225,12 +227,15 @@ while replay_game == "yes":
             # results for summary
             rounds_lost += 1
             result = "Lost"
-            outcome = "Round {}:\n Result: {}".format(rounds_played + 1, result)
+            score = 0
 
-        if outcome != "":
+        outcome = "Round {}:\n Result: {}, Score: {}".format(rounds_played + 1, result, score)
+
+        # If the exit code was entered, don't append the outcome. Otherwise, add the outcome to the list
+        if guess != "xxx":
             game_summary.append(outcome)
         # If the score is more than zero, add it to the list
-        if score > 0:
+        if score >= 0:
             round_score.append(score)
 
         # If the exit code is typed, end game
@@ -279,5 +284,6 @@ while replay_game == "yes":
     else:
         break
 
+# Thanks the user for playing
 print()
 print("Thank you for playing!!")

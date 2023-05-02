@@ -4,20 +4,24 @@ round_score = []
 rounds_lost = 0
 rounds_won = 0
 rounds_played = 5
+outcome = ()
+score = 0
 
 for item in range(0, 5):
 
-    result = input("choose result: ")
+    round_result = input("choose result: ")
 
-    if result == "lost":
+    if round_result == "lost":
+        result = "Loose"
         rounds_lost += 1
-    elif result == "won":
+        outcome = "Round {}:\n Result: {}".format(item, result)
+    elif round_result == "won":
+        result = "Win"
         rounds_won += 1
-
-    round_result = int(input("choose score: "))
-    outcome = "Round {}: {}\n Score: {}".format(item, result, round_result)
+        score = int(input("choose score: "))
+        outcome = "Round {}:\n Result: {} Score: {}".format(item, result, score)
     game_summary.append(outcome)
-    round_score.append(round_result)
+    round_score.append(score)
 
 # Calculate game stats
 percent_win = rounds_won / rounds_played * 100
@@ -29,8 +33,8 @@ ave_score = (sum(round_score)) / len(round_score)
 
 print()
 print("***** Game History *****")
-for game in game_summary:
-    print(game)
+for outcome in game_summary:
+    print(outcome)
 
 print()
 

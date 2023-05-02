@@ -33,8 +33,7 @@ def int_check(question, low=None, high=None):
             continue
 
 
-lowest = int_check("Low Number: ")
-highest = int_check("High Number: ", lowest + 1)
-rounds = int_check("Rounds: ", 1)
-guess = int_check("Guess: ", lowest, highest)
+lowest = int_check("Lower Parameter: ")
+highest = int_check("Higher Parameter: ", lowest + 1)
+guess = int_check("Between Parameters: ", lowest, highest)
 print("Program continues")
