@@ -5,4 +5,4 @@ import random
 low = 4
 high = 5
 
-secret_num = random.radint(low, high)
+secret_num = random.randint(low, high)

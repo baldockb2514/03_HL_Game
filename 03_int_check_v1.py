@@ -1,8 +1,8 @@
-# get and check user input
-def int_check(question, low=None, high=None):
+# Check if a number is an Integer within specified bounds
+def int_check(question, low=None, high=None, exit_code=None):
     situation = ""
 
-    # if low and high
+    # set the situation depending on what parameters were entered
     if low is not None and high is not None:
         situation = "both"
     elif low is not None and high is None:
@@ -10,8 +10,16 @@ def int_check(question, low=None, high=None):
 
     while True:
 
+        # Allow "" and the exit code to be a valid input
+        response = input(question)
+        if exit_code is not None:
+            if response == "":
+                return response
+            if response == exit_code:
+                return response
+
         try:
-            response = int(input(question))
+            response = int(response)
 
             # checks guess input is not too high or low if both upper and lower bounds are specified
             if situation == "both":
@@ -19,7 +27,7 @@ def int_check(question, low=None, high=None):
                     print(f"Please enter a number between {low} and {high}.")
                     continue
 
-            # checks high number is not too low
+            # checks if a number is higher than low if only lower bounds are specified
             elif situation == "low only":
                 if response < low:
                     print(f"Please enter a number that is higher than (or equal to) {low}")
@@ -27,7 +35,7 @@ def int_check(question, low=None, high=None):
 
             return response
 
-        # checks input is an integer
+        # If input it not an integer, print error and ask question again
         except ValueError:
             print("Please enter a integer. ")
             continue

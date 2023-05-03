@@ -102,16 +102,16 @@ def int_check(question, low=None, high=None, exit_code=None):
 print()
 statement_decorator("Welcome to Higher or Lower", "*")
 
+# ask if the user would like to see the instructions
+print()
+see_instructions = yes_no("Would you like to see the instructions? ")
+print()
+if see_instructions == "yes":
+    instructions()
+
 # Set up a loop to replay the game
 replay_game = "yes"
 while replay_game == "yes":
-
-    # ask if the user would like to see the instructions
-    print()
-    see_instructions = yes_no("Would you like to see the instructions? ")
-    print()
-    if see_instructions == "yes":
-        instructions()
 
     # get the range the secret number is between
     lowest = int_check("Low number: ")
@@ -123,10 +123,11 @@ while replay_game == "yes":
     # initialise counters
     rounds_won = 0
     rounds_lost = 0
-    rounds = 0
     guess = 0
     score = 0
     result = ""
+    rounds = 0
+    outcome = ""
 
     # set lists for game summary
     game_summary = []
@@ -164,6 +165,7 @@ while replay_game == "yes":
 
         # get the secret number
         secret_num = random.randint(lowest, highest)
+        print(secret_num)
 
         # calculate the number of guesses allowed
         guess_range = highest - lowest + 1
@@ -183,8 +185,7 @@ while replay_game == "yes":
 
             # End game if exit code is typed
             if guess == "xxx":
-                score = -1
-                outcome = ""
+                end_game = "yes"
                 break
 
             elif guess == "":
@@ -216,9 +217,10 @@ while replay_game == "yes":
                 else:
                     statement_decorator(f"Well done. You got it in {len(already_guessed) + 1}", "!")
                 # results for summary
-                score = guesses_allowed - len(already_guessed) + 1
+                score = len(already_guessed) + 1
                 rounds_won += 1
-                result = "Win"
+                outcome = "Round {}:\n Result: Win, Score: {}".format(rounds_played + 1, score)
+                round_score.append(score)
                 break
 
         # if the number of guesses left is less than one, the user lost
@@ -226,22 +228,13 @@ while replay_game == "yes":
             statement_decorator("You lost. Good luck next time!", "-")
             # results for summary
             rounds_lost += 1
-            result = "Lost"
-            score = 0
+            outcome = "Round {}:\n Result: Lost".format(rounds_played + 1, result)
 
-        outcome = "Round {}:\n Result: {}, Score: {}".format(rounds_played + 1, result, score)
+        # If the exit code is typed, end game
 
         # If the exit code was entered, don't append the outcome. Otherwise, add the outcome to the list
         if guess != "xxx":
             game_summary.append(outcome)
-        # If the score is more than zero, add it to the list
-        if score >= 0:
-            round_score.append(score)
-
-        # If the exit code is typed, end game
-        if guess == "xxx":
-            break
-        else:
             rounds_played += 1
             # if the number of rounds is more than rounds played or the mode is infinite, continue game
             if mode == "infinite" or rounds > rounds_played:
@@ -250,36 +243,40 @@ while replay_game == "yes":
             else:
                 break
 
-    # Calculate game statistics (Best score, worst score average)
-    percent_win = rounds_won / rounds_played * 100
-    percent_lost = rounds_lost / rounds_played * 100
-    best_score = min(round_score)
-    worst_score = max(round_score)
-    ave_score = (sum(round_score)) / len(round_score)
+    if rounds_played != 0:
+        print()
+        see_summary = yes_no("Would you like to see the summary of your game? ")
+        if see_summary == "yes":
+            # Calculate game statistics (Best score, worst score average)
+            percent_win = rounds_won / rounds_played * 100
+            percent_lost = rounds_lost / rounds_played * 100
+            best_score = min(round_score)
+            worst_score = max(round_score)
+            ave_score = (sum(round_score)) / len(round_score)
 
-    # print game summary heading
-    print(f"Score list:\n {round_score}")
-    print()
-    print("***** Game History *****")
-    for outcome in game_summary:
-        # Print the outcome of each round
-        print(outcome)
+            # print game summary heading
+            print("***** Game History *****")
+            for outcome in game_summary:
+                # Print the outcome of each round
+                print(outcome)
 
-    print()
+            print()
 
-    # displays game stats with % values to the nearest whole number
-    print("Game Statistics", "*")
-    print("Win: {}, ({:.0f}%)\nLoss: {}, "
-          "({:.0f}%)".format(rounds_won, percent_win, rounds_lost, percent_lost))
-    # displays the best, worst and average score
-    print(f"Best Score: {best_score:.0f}\nWorst Score: {worst_score:.0f}\nAverage Score: {ave_score:.2f}")
-    print()
+            # displays game stats with % values to the nearest whole number
+            print("Game Statistics", "*")
+            print("Win: {}, ({:.0f}%)\nLoss: {}, "
+                  "({:.0f}%)".format(rounds_won, percent_win, rounds_lost, percent_lost))
+            # displays the best, worst and average score
+            print(f"Best Score: {best_score:.0f}\nWorst Score: {worst_score:.0f}\nAverage Score: {ave_score:.2f}")
+            print()
 
     # Asks if the user wants to replay the game
     print()
     replay = yes_no("Would you like to play again?: ")
+
     # If yes, Replay game
     if replay == "yes":
+        print()
         continue
     else:
         break

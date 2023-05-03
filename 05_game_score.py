@@ -6,20 +6,21 @@ rounds_won = 0
 rounds_played = 5
 outcome = ()
 score = 0
+result = ""
 
 for item in range(0, 5):
 
     round_result = input("choose result: ")
 
     if round_result == "lost":
-        result = "Loose"
+        result = "Lost"
         rounds_lost += 1
-        outcome = "Round {}:\n Result: {}".format(item, result)
     elif round_result == "won":
-        result = "Win"
+        result = "Won"
         rounds_won += 1
         score = int(input("choose score: "))
-        outcome = "Round {}:\n Result: {} Score: {}".format(item, result, score)
+
+    outcome = "Round {}:\n Result: {} Score: {}".format(item, result, score)
     game_summary.append(outcome)
     round_score.append(score)
 
