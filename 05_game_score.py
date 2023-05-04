@@ -13,11 +13,11 @@ for item in range(0, 5):
     round_result = input("choose result: ")
 
     if round_result == "lost":
-        result = "Lost"
         rounds_lost += 1
+        outcome = "Round {}:\n Result: Lost".format(item)
     elif round_result == "won":
-        result = "Won"
         rounds_won += 1
+        outcome = "Round {}:\n Result: Won Score: {}".format(item, score)
         score = int(input("choose score: "))
 
     outcome = "Round {}:\n Result: {} Score: {}".format(item, result, score)

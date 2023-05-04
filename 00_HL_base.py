@@ -6,7 +6,6 @@ import random
 
 # statement decoration types
 def statement_decorator(statement, decoration):
-
     # Make string with five characters
     sides = decoration * 5
 
@@ -55,13 +54,17 @@ def instructions():
 
 # Check if a number is an Integer within specified bounds
 def int_check(question, low=None, high=None, exit_code=None):
-    situation = ""
 
     # set the situation depending on what parameters were entered
     if low is not None and high is not None:
         situation = "both"
+        error = f"Please enter an integer between {low} and {high}"
     elif low is not None and high is None:
         situation = "low only"
+        error = f"Please enter a number that is higher than (or equal to) {low}"
+    else:
+        situation = "any integer"
+        error = "Please enter an integer"
 
     while True:
 
@@ -78,40 +81,40 @@ def int_check(question, low=None, high=None, exit_code=None):
 
             # checks guess input is not too high or low if both upper and lower bounds are specified
             if situation == "both":
-                if response < low or response > high:
-                    print(f"Please enter a number between {low} and {high}.")
-                    continue
+                if low <= response <= high:
+                    return response
 
             # checks if a number is higher than low if only lower bounds are specified
             elif situation == "low only":
-                if response < low:
-                    print(f"Please enter a number that is higher than (or equal to) {low}")
-                    continue
+                if response > low:
+                    return response
 
-            return response
+            else:
+                return response
+
+            print(error)
 
         # If input it not an integer, print error and ask question again
         except ValueError:
-            print("Please enter a integer. ")
+            print(error)
             continue
 
 
 # Main routine goes here
 
-# Game Title
-print()
-statement_decorator("Welcome to Higher or Lower", "*")
+# Main game loop
+while True:
 
-# ask if the user would like to see the instructions
-print()
-see_instructions = yes_no("Would you like to see the instructions? ")
-print()
-if see_instructions == "yes":
-    instructions()
+    # Game Title
+    print()
+    statement_decorator("Welcome to Higher or Lower", "*")
 
-# Set up a loop to replay the game
-replay_game = "yes"
-while replay_game == "yes":
+    # ask if the user would like to see the instructions
+    print()
+    see_instructions = yes_no("Would you like to see the instructions? ")
+    print()
+    if see_instructions == "yes":
+        instructions()
 
     # get the range the secret number is between
     lowest = int_check("Low number: ")
@@ -123,9 +126,6 @@ while replay_game == "yes":
     # initialise counters
     rounds_won = 0
     rounds_lost = 0
-    guess = 0
-    score = 0
-    result = ""
     rounds = 0
     outcome = ""
 
@@ -144,7 +144,7 @@ while replay_game == "yes":
             mode = "infinite"
             break
         elif rounds == "xxx":
-            print("Please enter a integer. ")
+            print("Please enter a integer higher than (or equal to) 1. ")
             continue
         else:
             break
@@ -178,7 +178,7 @@ while replay_game == "yes":
         # set list to prevent duplicates
         already_guessed = []
 
-        while guesses_left >= 1:
+        while True:
             # compare numbers
             # get users guess
             guess = int_check("Guess a number: ", lowest, highest, "xxx")
@@ -205,7 +205,7 @@ while replay_game == "yes":
 
                 # check if the guess is lower or higher than the secret number, then tell the user
                 if guess < secret_num:
-                    statement_decorator("Too low, try a higher number. Guesses left: {}".format(guesses_left), "↑",)
+                    statement_decorator("Too low, try a higher number. Guesses left: {}".format(guesses_left), "↑", )
                 elif guess > secret_num:
                     statement_decorator("Too high, try a lower number. Guesses left: {}".format(guesses_left), "↓")
 
@@ -223,14 +223,12 @@ while replay_game == "yes":
                 round_score.append(score)
                 break
 
-        # if the number of guesses left is less than one, the user lost
-        else:
-            statement_decorator("You lost. Good luck next time!", "-")
-            # results for summary
-            rounds_lost += 1
-            outcome = "Round {}:\n Result: Lost".format(rounds_played + 1, result)
-
-        # If the exit code is typed, end game
+            # if the number of guesses left is less than one, the user lost
+            else:
+                statement_decorator("You lost. Good luck next time!", "-")
+                # results for summary
+                rounds_lost += 1
+                outcome = "Round {}:\n Result: Lost".format(rounds_played + 1)
 
         # If the exit code was entered, don't append the outcome. Otherwise, add the outcome to the list
         if guess != "xxx":
@@ -243,6 +241,7 @@ while replay_game == "yes":
             else:
                 break
 
+    # if at least one round has been completed, ask the user if they want to see a summary of their game,
     if rounds_played != 0:
         print()
         see_summary = yes_no("Would you like to see the summary of your game? ")
@@ -268,7 +267,6 @@ while replay_game == "yes":
                   "({:.0f}%)".format(rounds_won, percent_win, rounds_lost, percent_lost))
             # displays the best, worst and average score
             print(f"Best Score: {best_score:.0f}\nWorst Score: {worst_score:.0f}\nAverage Score: {ave_score:.2f}")
-            print()
 
     # Asks if the user wants to replay the game
     print()
@@ -276,8 +274,8 @@ while replay_game == "yes":
 
     # If yes, Replay game
     if replay == "yes":
-        print()
         continue
+    # Else, end program
     else:
         break
 
