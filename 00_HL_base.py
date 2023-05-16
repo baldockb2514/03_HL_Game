@@ -86,7 +86,7 @@ def int_check(question, low=None, high=None, exit_code=None):
 
             # checks if a number is higher than low if only lower bounds are specified
             elif situation == "low only":
-                if response > low:
+                if response >= low:
                     return response
 
             else:
@@ -118,7 +118,7 @@ while True:
 
     # get the range the secret number is between
     lowest = int_check("Low number: ")
-    highest = int_check("High Number: ", lowest + 1)
+    highest = int_check("High Number: ", lowest + 2)
 
     # Ask user for # of rounds then loop...
     rounds_played = 0
@@ -165,13 +165,14 @@ while True:
 
         # get the secret number
         secret_num = random.randint(lowest, highest)
-        print(secret_num)
 
         # calculate the number of guesses allowed
         guess_range = highest - lowest + 1
         max_raw = math.log2(guess_range)
         max_upped = math.ceil(max_raw)
         guesses_allowed = max_upped + 1
+        if highest == lowest + 2:
+            guesses_allowed -= 1
         print(f"Max Guesses: {guesses_allowed}")
         guesses_left = guesses_allowed
 
@@ -198,13 +199,21 @@ while True:
                 continue
 
             elif guess != secret_num:
-
                 guesses_left -= 1
+
                 # Append the number guessed to avoid duplicates
                 already_guessed.append(guess)
 
                 # check if the guess is lower or higher than the secret number, then tell the user
-                if guess < secret_num:
+                # if the number of guesses left is less than one, the user lost
+                if guesses_left < 1:
+                    statement_decorator("You ran out of guesses :(. Good luck next time!", "-")
+                    # results for summary
+                    rounds_lost += 1
+                    outcome = "Round {}:\n Result: Lost".format(rounds_played + 1)
+                    break
+
+                elif guess < secret_num:
                     statement_decorator("Too low, try a higher number. Guesses left: {}".format(guesses_left), "↑", )
                 elif guess > secret_num:
                     statement_decorator("Too high, try a lower number. Guesses left: {}".format(guesses_left), "↓")
@@ -222,13 +231,6 @@ while True:
                 outcome = "Round {}:\n Result: Win, Score: {}".format(rounds_played + 1, score)
                 round_score.append(score)
                 break
-
-            # if the number of guesses left is less than one, the user lost
-            else:
-                statement_decorator("You lost. Good luck next time!", "-")
-                # results for summary
-                rounds_lost += 1
-                outcome = "Round {}:\n Result: Lost".format(rounds_played + 1)
 
         # If the exit code was entered, don't append the outcome. Otherwise, add the outcome to the list
         if guess != "xxx":
