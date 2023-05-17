@@ -102,19 +102,19 @@ def int_check(question, low=None, high=None, exit_code=None):
 
 # Main routine goes here
 
+# Game Title
+print()
+statement_decorator("Welcome to Higher or Lower", "*")
+
+# ask if the user would like to see the instructions
+print()
+see_instructions = yes_no("Would you like to see the instructions? ")
+print()
+if see_instructions == "yes":
+    instructions()
+
 # Main game loop
 while True:
-
-    # Game Title
-    print()
-    statement_decorator("Welcome to Higher or Lower", "*")
-
-    # ask if the user would like to see the instructions
-    print()
-    see_instructions = yes_no("Would you like to see the instructions? ")
-    print()
-    if see_instructions == "yes":
-        instructions()
 
     # get the range the secret number is between
     lowest = int_check("Low number: ")
@@ -127,6 +127,7 @@ while True:
     rounds_won = 0
     rounds_lost = 0
     rounds = 0
+    score = 0
     outcome = ""
 
     # set lists for game summary
@@ -174,6 +175,7 @@ while True:
         if highest == lowest + 2:
             guesses_allowed -= 1
         print(f"Max Guesses: {guesses_allowed}")
+
         guesses_left = guesses_allowed
 
         # set list to prevent duplicates
@@ -210,7 +212,8 @@ while True:
                     statement_decorator("You ran out of guesses :(. Good luck next time!", "-")
                     # results for summary
                     rounds_lost += 1
-                    outcome = "Round {}:\n Result: Lost".format(rounds_played + 1)
+                    outcome = "Round {}:\n You ran out og guesses".format(rounds_played + 1)
+                    score = guesses_allowed + 1
                     break
 
                 elif guess < secret_num:
@@ -223,18 +226,20 @@ while True:
                 if guesses_left == guesses_allowed:
                     # custom message if the got it in one
                     statement_decorator(f"Amazing! You got it in one!", "*")
+                    score = 1
                 else:
-                    statement_decorator(f"Well done. You got it in {len(already_guessed) + 1}", "!")
+                    guesses_left -= 1
+                    statement_decorator(f"Well done. You got it in {guesses_allowed - guesses_left}", "!")
+                    score = guesses_allowed - guesses_left
                 # results for summary
-                score = len(already_guessed) + 1
                 rounds_won += 1
-                outcome = "Round {}:\n Result: Win, Score: {}".format(rounds_played + 1, score)
-                round_score.append(score)
+                outcome = "Round {}:\n You got it in {}".format(rounds_played + 1, score)
                 break
 
         # If the exit code was entered, don't append the outcome. Otherwise, add the outcome to the list
         if guess != "xxx":
             game_summary.append(outcome)
+            round_score.append(score)
             rounds_played += 1
             # if the number of rounds is more than rounds played or the mode is infinite, continue game
             if mode == "infinite" or rounds > rounds_played:
